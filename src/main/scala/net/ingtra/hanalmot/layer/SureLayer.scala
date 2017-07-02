@@ -21,6 +21,10 @@ private[hanalmot] object SureLayer {
       sureCandidate(char, "SL")
     else if (number.contains(char))
       sureCandidate(char, "SN")
+    else if ('ㄱ' <= char.toCharArray()(0) && char.toCharArray()(0) <= 'ㅎ')
+      sureCandidate(char, "ZKP")
+    else if ('ㅏ' <= char.toCharArray()(0) && char.toCharArray()(0) <= 'ㅣ')
+      sureCandidate(char, "ZKP")
     else
       new Candidates(Map())
   }
