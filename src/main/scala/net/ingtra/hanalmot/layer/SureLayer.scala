@@ -17,6 +17,8 @@ private[hanalmot] object SureLayer {
       sureCandidate(char, "SF")
     else if (char == "," || char == ":" || char == "/")
       sureCandidate(char, "SP")
+    else if (char == '"'.toString || char == '“'.toString || char == "'")
+      sureCandidate(char, "SS")
     else if (alphabet.contains(char))
       sureCandidate(char, "SL")
     else if (number.contains(char))
