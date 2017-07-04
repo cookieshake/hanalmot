@@ -9,7 +9,7 @@ object Hanalmot {
     prediction = SureLayer(prediction)
     prediction = ThreeGramLayer(prediction)
     prediction = PosLayer(prediction)
-    prediction = FillNNPLayer(prediction)
+    //prediction = FillNNPLayer(prediction)
     var result = PredictionToResultLayer(prediction)
     result = NNPCorrectionLayer(result)
     result = ConcatenationLayer(result)
