@@ -5,7 +5,7 @@ import net.ingtra.hanalmot.util.DictionaryUtil
 
 private[hanalmot] object ThreeGramLayer {
   private def nnpCandidate(letter: String) = {
-    new Candidates(Map(Seq(HanalmotToken(letter, "NNP")) -> 1.4))
+    new Candidates(Map(Seq(HanalmotToken(letter, "NNP")) -> 1.0))
   }
 
   def apply(prediction: Prediction): Prediction = {
@@ -16,7 +16,7 @@ private[hanalmot] object ThreeGramLayer {
       if (prediction.candidatesArray(index).isMutable) {
         val count = DictionaryUtil.getLeft3gram(gram)
         if (count.isEmpty) {
-          prediction.candidatesArray(index) += nnpCandidate(gram(2).toString)
+          prediction.candidatesArray(index) += nnpCandidate(element._1(2)) * 1.5
         } else {
           prediction.candidatesArray(index) += new Candidates(count).normalizeWithLog().normalizeWithSum() * 1.5
         }
@@ -28,7 +28,7 @@ private[hanalmot] object ThreeGramLayer {
       if (prediction.candidatesArray(index).isMutable) {
         val count = DictionaryUtil.getCenter3gram(gram)
         if (count.isEmpty) {
-          prediction.candidatesArray(index) += nnpCandidate(gram(1).toString)
+          prediction.candidatesArray(index) += nnpCandidate(element._1(1))
         } else {
           prediction.candidatesArray(index) += new Candidates(count).normalizeWithLog().normalizeWithSum()
         }
@@ -40,7 +40,7 @@ private[hanalmot] object ThreeGramLayer {
       if (prediction.candidatesArray(index).isMutable) {
         val count = DictionaryUtil.getRight3gram(gram)
         if (count.isEmpty) {
-          prediction.candidatesArray(index) += nnpCandidate(gram(0).toString)
+          prediction.candidatesArray(index) += nnpCandidate(element._1(0)) * 1.5
         } else {
           prediction.candidatesArray(index) += new Candidates(count).normalizeWithLog().normalizeWithSum() * 1.5
         }
