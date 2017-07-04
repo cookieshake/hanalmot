@@ -12,7 +12,7 @@ private[hanalmot] object FillNNPLayer {
       val char = element._1
       val index = element._2
 
-      if (prediction.candidatesArray(index).content.size == 0) {
+      if (prediction.candidatesArray(index).content.isEmpty) {
         prediction.candidatesArray(index) = nnpCandidate(char)
       }
     }
