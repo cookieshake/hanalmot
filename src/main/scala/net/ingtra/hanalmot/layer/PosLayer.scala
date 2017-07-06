@@ -1,37 +1,34 @@
 package net.ingtra.hanalmot.layer
 
-import net.ingtra.hanalmot.component.{HanalmotToken, Prediction}
+import net.ingtra.hanalmot.component.{Candidates, HanalmotToken, Prediction}
 import net.ingtra.hanalmot.util.{DictionaryUtil, MapUtil}
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 object PosLayer {
+  val posLeftDic = DictionaryUtil.getLeftPos()
+    .mapValues(MapUtil.normalizeWithLog).mapValues(MapUtil.normalizeWithSum).mapValues(_.withDefaultValue[Double](0))
+  val posRightDic = DictionaryUtil.getRightPos()
+    .mapValues(MapUtil.normalizeWithLog).mapValues(MapUtil.normalizeWithSum).mapValues(_.withDefaultValue[Double](0))
+
   def apply(prediction: Prediction): Prediction = {
-    var posLeft = DictionaryUtil.getLeftPos()
-    posLeft = MapUtil.normalizeWithLog(posLeft)
-    posLeft = MapUtil.normalizeWithSum(posLeft)
-    var posRight = DictionaryUtil.getRightPos()
-    posRight = MapUtil.normalizeWithLog(posRight)
-    posRight = MapUtil.normalizeWithSum(posRight)
     val candidatesArray = prediction.candidatesArray
+    val newCandidatesArray: ListBuffer[Candidates] = mutable.ListBuffer()
 
     for (i <- candidatesArray.indices) {
-      var leftPosMap: Map[String, Double] = null
+      var formerPosMap: Map[String, Double] = null
       if (i == 0) {
-        leftPosMap = Map("ZST" -> 1.0)
+        formerPosMap = Map("ZST" -> 1.0)
       } else {
-        leftPosMap = candidatesArray(i - 1).content.map((element) => (element._1.last.pos, element._2))
-        leftPosMap = MapUtil.normalizeWithLog(leftPosMap)
-        leftPosMap = MapUtil.normalizeWithSum(leftPosMap)
+        formerPosMap = candidatesArray(i - 1).content.map((element) => (element._1.last.pos, element._2))
       }
 
-      var rightPosMap: Map[String, Double] = null
+      var followingPosMap: Map[String, Double] = null
       if (i == candidatesArray.length - 1) {
-        rightPosMap = Map("ZED" -> 1.0)
+        followingPosMap = Map("ZED" -> 1.0)
       } else {
-        rightPosMap = candidatesArray(i + 1).content.map((element) => (element._1.head.pos, element._2))
-        rightPosMap = MapUtil.normalizeWithLog(rightPosMap)
-        rightPosMap = MapUtil.normalizeWithSum(rightPosMap)
+        followingPosMap = candidatesArray(i + 1).content.map((element) => (element._1.head.pos, element._2))
       }
 
       val newMap = mutable.Map[Seq[HanalmotToken], Double]()
@@ -39,16 +36,13 @@ object PosLayer {
         val myLeftPos = candidate._1.head.pos
         val myRightPos = candidate._1.last.pos
 
-        val leftSum = posLeft.filter((element) =>
-          element._1._1 == myLeftPos && leftPosMap.contains(element._1._2)).values.sum
-        val rightSum = posRight.filter((element) =>
-          element._1._1 == myRightPos && rightPosMap.contains(element._1._2)).values.sum
-
+        val leftSum = formerPosMap.map((e) => posRightDic(e._1)(myLeftPos) * e._2).sum
+        val rightSum = followingPosMap.map((e) => posLeftDic(e._1)(myRightPos) * e._2).sum
         newMap.put(candidate._1, candidate._2 * (leftSum + rightSum))
       }
-      candidatesArray(i).content = newMap.toMap
-
+      newCandidatesArray.append(new Candidates(newMap.toMap))
     }
+    prediction.candidatesArray = newCandidatesArray.toArray
     prediction.candidatesArray = prediction.candidatesArray.map(_.normalizeWithSum())
     prediction
   }

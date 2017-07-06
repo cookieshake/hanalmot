@@ -15,8 +15,8 @@ private[hanalmot] object DictionaryUtil {
   def getCenter3gram(gram: String): Map[Seq[HanalmotToken], Double] = get3gram(gram, "center")
   def getRight3gram(gram: String): Map[Seq[HanalmotToken], Double] = get3gram(gram, "right")
 
-  def getLeftPos(): Map[(String, String), Double] = getPos("left")
-  def getRightPos(): Map[(String, String), Double] = getPos("right")
+  def getLeftPos(): Map[String, Map[String, Double]] = getPos("left")
+  def getRightPos(): Map[String, Map[String, Double]] = getPos("right")
 
   def getTokens(): Array[HanalmotToken] = {
     val tempList = ListBuffer[HanalmotToken]()
@@ -46,15 +46,15 @@ private[hanalmot] object DictionaryUtil {
     tempMap.toMap[Seq[HanalmotToken], Double]
   }
 
-  private def getPos(direction: String): Map[(String, String), Double] = {
-    val tempMap = mutable.Map[(String, String), Double]()
+  private def getPos(direction: String): Map[String, Map[String, Double]] = {
+    val tempMap = mutable.ListBuffer[(String, String, Double)]()
     val resultSet = DBConnector.executeQuery(s"SELECT pos, target, count from $direction" + "_pos;")
     while (resultSet.next()) {
       val pos = resultSet.getString("pos")
       val target = resultSet.getString("target")
       val count = resultSet.getInt("count").toDouble
-      tempMap.put((pos, target), count)
+      tempMap.append((pos, target, count))
     }
-    tempMap.toMap
+    tempMap.groupBy(_._1).mapValues(_.map((e) => e._2 -> e._3).toMap)
   }
 }
