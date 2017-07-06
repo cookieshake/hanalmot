@@ -43,7 +43,8 @@ private[hanalmot] object DictionaryUtil {
       val count = resultSet.getInt("count").toDouble
       tempMap.put(tokens, count)
     }
-    tempMap.toMap[Seq[HanalmotToken], Double]
+    val resultMap = tempMap.toMap[Seq[HanalmotToken], Double]
+    MapUtil.normalizeWithSum(MapUtil.normalizeWithLog(resultMap))
   }
 
   private def getPos(direction: String): Map[String, Map[String, Double]] = {

@@ -5,7 +5,7 @@ import net.ingtra.hanalmot.util.DictionaryUtil
 
 private[hanalmot] object ThreeGramLayer {
   private def nnpCandidate(letter: String) = {
-    new Candidates(Map(Seq(HanalmotToken(letter, "NNP")) -> 0.3))
+    new Candidates(Map(Seq(HanalmotToken(letter, "NNP")) -> 0.1))
   }
 
   def apply(prediction: Prediction): Prediction = {
@@ -14,11 +14,11 @@ private[hanalmot] object ThreeGramLayer {
       val gram = element._1.reduceLeft(_ + _)
       val index = element._2
       if (prediction.candidatesArray(index).isMutable) {
-        val count = DictionaryUtil.getLeft3gram(gram)
-        if (count.isEmpty) {
+        val gramMap = DictionaryUtil.getLeft3gram(gram)
+        if (gramMap.isEmpty) {
           prediction.candidatesArray(index) += nnpCandidate(element._1(2)) * 1.5
         } else {
-          prediction.candidatesArray(index) += new Candidates(count).normalizeWithLog().normalizeWithSum() * 1.5
+          prediction.candidatesArray(index) += new Candidates(gramMap) * 1.5
         }
       }
     }
@@ -26,11 +26,11 @@ private[hanalmot] object ThreeGramLayer {
       val gram = element._1.reduceLeft(_ + _)
       val index = element._2
       if (prediction.candidatesArray(index).isMutable) {
-        val count = DictionaryUtil.getCenter3gram(gram)
-        if (count.isEmpty) {
+        val gramMap = DictionaryUtil.getCenter3gram(gram)
+        if (gramMap.isEmpty) {
           prediction.candidatesArray(index) += nnpCandidate(element._1(1))
         } else {
-          prediction.candidatesArray(index) += new Candidates(count).normalizeWithLog().normalizeWithSum()
+          prediction.candidatesArray(index) += new Candidates(gramMap)
         }
       }
     }
@@ -38,11 +38,11 @@ private[hanalmot] object ThreeGramLayer {
       val gram = element._1.reduceLeft(_ + _)
       val index = element._2
       if (prediction.candidatesArray(index).isMutable) {
-        val count = DictionaryUtil.getRight3gram(gram)
-        if (count.isEmpty) {
+        val gramMap = DictionaryUtil.getRight3gram(gram)
+        if (gramMap.isEmpty) {
           prediction.candidatesArray(index) += nnpCandidate(element._1(0)) * 1.5
         } else {
-          prediction.candidatesArray(index) += new Candidates(count).normalizeWithLog().normalizeWithSum() * 1.5
+          prediction.candidatesArray(index) += new Candidates(gramMap) * 1.5
         }
       }
     }
