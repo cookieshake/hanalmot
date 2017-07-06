@@ -5,7 +5,7 @@ import net.ingtra.hanalmot.util.DictionaryUtil
 
 private[hanalmot] object ThreeGramLayer {
   private def nnpCandidate(letter: String) = {
-    new Candidates(Map(Seq(HanalmotToken(letter, "NNP")) -> 1.0))
+    new Candidates(Map(Seq(HanalmotToken(letter, "NNP")) -> 0.3))
   }
 
   def apply(prediction: Prediction): Prediction = {
