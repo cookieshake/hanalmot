@@ -1,13 +1,24 @@
 # hanalmot
 Korean Tokenizer based on n-gram
 
+## Intro
+
+Hanalmot uses corpus and part-of-speech tags from 세종말뭉치. Following POS tags starts with letter 'Z' are added to Hanalmot due to some purposes.
+
+| POS  | Description                              |
+| ---- | ---------------------------------------- |
+| ZSP  | Spacing                                  |
+| ZNO  | Not a morpheme. Unvisible in a final result |
+
+
+
 ## How to use
 
 ### with Scala
 
 Code:
 ``` scala
-object HanalmotExample {  
+object HanalmotExample {  
   def main(args: Array[String]): Unit = {
     val text = "오버워치는 블리자드에서 만든 게임이다."
     Hanalmot.tokenize(text).foreach(print)
