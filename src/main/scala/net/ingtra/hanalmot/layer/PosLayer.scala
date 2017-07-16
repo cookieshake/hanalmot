@@ -9,8 +9,10 @@ import scala.collection.mutable.ListBuffer
 object PosLayer {
   val posLeftDic = DictionaryUtil.getLeftPos()
     .mapValues(MapUtil.normalizeWithLog).mapValues(MapUtil.normalizeWithSum).mapValues(_.withDefaultValue[Double](0))
+    .withDefaultValue(Map().withDefaultValue[Double](0))
   val posRightDic = DictionaryUtil.getRightPos()
     .mapValues(MapUtil.normalizeWithLog).mapValues(MapUtil.normalizeWithSum).mapValues(_.withDefaultValue[Double](0))
+    .withDefaultValue(Map().withDefaultValue[Double](0))
 
   def apply(prediction: Prediction): Prediction = {
     val candidatesArray = prediction.candidatesArray
