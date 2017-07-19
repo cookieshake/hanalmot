@@ -1,7 +1,6 @@
 package net.ingtra.hanalmot.layer
 
-import net.ingtra.hanalmot.component.{HanalmotToken, Prediction, Result}
-
+import net.ingtra.hanalmot.component.{HanalmotToken, Result}
 import scala.collection.mutable
 
 private[hanalmot] object NNPCorrectionLayer {
@@ -18,6 +17,7 @@ private[hanalmot] object NNPCorrectionLayer {
         nounChunk.clear()
       }
     }
+    nounChunk.clear()
     result
   }
 
