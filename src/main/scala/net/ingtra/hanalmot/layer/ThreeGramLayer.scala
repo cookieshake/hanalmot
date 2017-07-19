@@ -31,7 +31,7 @@ private[hanalmot] object ThreeGramLayer {
       }
     }
     prediction.candidatesArray.foreach(_.normalizeWithSum())
-    prediction.candidatesArray.foreach(_.remainTop(3))
+    prediction.candidatesArray.foreach(_.remainTop(5))
     prediction
   }
 }

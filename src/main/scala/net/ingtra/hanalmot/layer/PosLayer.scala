@@ -7,10 +7,10 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 object PosLayer {
-  val posLeftDic = DictionaryUtil.getLeftPos()
+  val posLeftDic = DictionaryUtil.getLeftPos().mapValues(MapUtil.dropToLow)
     .mapValues(MapUtil.normalizeWithLog).mapValues(MapUtil.normalizeWithSum).mapValues(_.withDefaultValue[Double](0))
     .withDefaultValue(Map().withDefaultValue[Double](0))
-  val posRightDic = DictionaryUtil.getRightPos()
+  val posRightDic = DictionaryUtil.getRightPos().mapValues(MapUtil.dropToLow)
     .mapValues(MapUtil.normalizeWithLog).mapValues(MapUtil.normalizeWithSum).mapValues(_.withDefaultValue[Double](0))
     .withDefaultValue(Map().withDefaultValue[Double](0))
 
@@ -38,8 +38,8 @@ object PosLayer {
         val myLeftPos = candidate._1.head.pos
         val myRightPos = candidate._1.last.pos
 
-        val leftSum = formerPosMap.map((e) => posRightDic(e._1)(myLeftPos) * e._2).sum
-        val rightSum = followingPosMap.map((e) => posLeftDic(e._1)(myRightPos) * e._2).sum
+        val leftSum = formerPosMap.map((e) => posRightDic(e._1)(myLeftPos) * e._2).sum / formerPosMap.size
+        val rightSum = followingPosMap.map((e) => posLeftDic(e._1)(myRightPos) * e._2).sum / followingPosMap.size
         newMap.put(candidate._1, candidate._2 * (leftSum + rightSum))
       }
       newCandidatesArray.append(new Candidates(newMap.toMap))
