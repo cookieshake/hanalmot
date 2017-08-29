@@ -11,7 +11,9 @@ private[hanalmot] object DBConnector {
     for ((parameter, index) <- parameters.zipWithIndex) {
       preparedStatement.setString(index + 1, parameter)
     }
-    preparedStatement.executeQuery()
+    val resultSet = preparedStatement.executeQuery()
+    preparedStatement.close()
+    resultSet
   }
 }
 
