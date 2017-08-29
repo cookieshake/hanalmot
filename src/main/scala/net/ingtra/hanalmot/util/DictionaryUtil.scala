@@ -30,6 +30,7 @@ private[hanalmot] object DictionaryUtil {
 
       tempList.append(tokenObject)
     }
+    resultSet.getStatement().close()
 
     tempList.toArray[HanalmotToken]
   }
@@ -43,6 +44,7 @@ private[hanalmot] object DictionaryUtil {
       val count = resultSet.getInt("count").toDouble
       tempMap.put(tokens, count)
     }
+    resultSet.getStatement().close()
     val resultMap = tempMap.toMap[Seq[HanalmotToken], Double]
     MapUtil.normalizeWithSum(MapUtil.normalizeWithLog(resultMap))
   }
@@ -56,6 +58,7 @@ private[hanalmot] object DictionaryUtil {
       val count = resultSet.getInt("count").toDouble
       tempMap.append((pos, target, count))
     }
+    resultSet.getStatement().close()
     tempMap.groupBy(_._1).mapValues(_.map((e) => e._2 -> e._3).toMap)
   }
 }
